@@ -1,0 +1,44 @@
+<div class="login-page">
+    <section class="login-card">
+        <div class="brand-icon">📚</div>
+
+        <p class="eyebrow">LIBRARY MANAGEMENT SYSTEM</p>
+        <h1>Admin Login</h1>
+        <p class="subtitle">
+            Sign in to manage your book inventory.
+        </p>
+
+        <div *ngIf="errorMessage" class="error-message" role="alert">
+            {{ errorMessage }}
+        </div>
+
+        <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+            <label class="field">
+                <span>Email address</span>
+                <input type="email" name="email" [(ngModel)]="email" required email autocomplete="username"
+                    placeholder="admin@library.local" />
+            </label>
+
+            <label class="field">
+                <span>Password</span>
+                <input type="password" name="password" [(ngModel)]="password" required autocomplete="current-password"
+                    placeholder="Enter your password" />
+            </label>
+
+            <button type="submit" [disabled]="loading || loginForm.invalid">
+                {{ loading ? 'Signing in...' : 'Sign in securely' }}
+            </button>
+            <p class="switch-link">
+                <a routerLink="/login/student">Login as Student</a>
+            </p>
+
+            <p class="switch-link">
+                <a routerLink="/register">Create Student Account</a>
+            </p>
+        </form>
+
+        <p class="security-note">
+            Authorized administrators only.
+        </p>
+    </section>
+</div>

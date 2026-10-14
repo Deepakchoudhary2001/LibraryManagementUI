@@ -1,0 +1,92 @@
+
+<div class="auth-page">
+  <section class="auth-card">
+    <a routerLink="/" class="brand">← Back to Library</a>
+
+    <div class="heading">
+      <div class="icon">+</div>
+      <h1>Create Student Account</h1>
+      <p>Register to browse the library and request books.</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+      <label for="fullName">Full name</label>
+      <input
+        id="fullName"
+        name="fullName"
+        [(ngModel)]="fullName"
+        autocomplete="name"
+        minlength="2"
+        maxlength="150"
+        required
+      />
+
+      <label for="email">Email address</label>
+      <input
+        id="email"
+        type="email"
+        name="email"
+        [(ngModel)]="email"
+        autocomplete="email"
+        maxlength="256"
+        required
+        email
+      />
+
+      <label for="mobileNumber">Mobile number</label>
+      <input
+        id="mobileNumber"
+        type="tel"
+        name="mobileNumber"
+        [(ngModel)]="mobileNumber"
+        autocomplete="tel"
+        minlength="7"
+        maxlength="20"
+        required
+      />
+
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        name="password"
+        [(ngModel)]="password"
+        autocomplete="new-password"
+        minlength="8"
+        maxlength="128"
+        required
+      />
+
+      <label for="confirmPassword">Confirm password</label>
+      <input
+        id="confirmPassword"
+        type="password"
+        name="confirmPassword"
+        [(ngModel)]="confirmPassword"
+        autocomplete="new-password"
+        required
+      />
+
+      @if (errorMessage) {
+        <p class="error">{{ errorMessage }}</p>
+      }
+
+      <button
+        type="submit"
+        [disabled]="registerForm.invalid || isLoading"
+      >
+        {{ isLoading ? 'Creating account...' : 'Create Account' }}
+      </button>
+    </form>
+
+    <p class="switch-link">
+      Already registered?
+      <a routerLink="/login/student">Sign in as Student</a>
+    </p>
+
+    <p class="switch-link">
+      Library administrator or staff?
+      <a routerLink="/login">Admin / Staff Login</a>
+    </p>
+  </section>
+</div>

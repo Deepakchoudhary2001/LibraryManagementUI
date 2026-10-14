@@ -1,0 +1,36 @@
+<div class="auth-page">
+    <section class="auth-card">
+        <a routerLink="/" class="brand">← Back to Library</a>
+
+        <div class="heading">
+            <div class="icon">S</div>
+            <h1>Student Sign In</h1>
+            <p>Sign in to explore books and manage your borrowing.</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+            <label for="email">Email address</label>
+            <input id="email" type="email" name="email" [(ngModel)]="email" placeholder="you@example.com"
+                autocomplete="email" required email />
+
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password" [(ngModel)]="password"
+                placeholder="Enter your password" autocomplete="current-password" required />
+
+            @if (errorMessage) {
+            <p class="error">{{ errorMessage }}</p>
+            }
+
+            <button type="submit" [disabled]="loginForm.invalid || isLoading">
+                {{ isLoading ? 'Signing in...' : 'Sign In' }}
+            </button>
+            <p class="switch-link">
+                <a routerLink="/login">Login as Admin</a>
+            </p>
+
+            <p class="switch-link">
+                <a routerLink="/register">Create Student Account</a>
+            </p>
+        </form>
+    </section>
+</div>

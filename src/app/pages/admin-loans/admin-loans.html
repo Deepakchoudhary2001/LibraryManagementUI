@@ -1,0 +1,87 @@
+
+<div class="admin-loans-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">LIBRARY ADMINISTRATION</p>
+      <h1>Loan History</h1>
+      <p class="subtitle">Review active loans, completed returns and recorded fines.</p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="goToInventory()">Book Inventory</button>
+      <button class="btn btn-outline" (click)="goToReturnRequests()">Return Requests</button>
+      <button class="btn btn-outline" (click)="loadLoans()" [disabled]="loading">
+        {{ loading ? 'Refreshing...' : 'Refresh' }}
+      </button>
+      <button class="btn btn-danger" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <span>Total loans</span>
+      <strong>{{ loans.length }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Active loans</span>
+      <strong>{{ activeLoans.length }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Returned loans</span>
+      <strong>{{ returnedLoans.length }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Recorded fines</span>
+      <strong>{{ totalRecordedFines | currency:'INR':'symbol':'1.0-2' }}</strong>
+    </div>
+  </section>
+
+  <div class="alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="loading-state" *ngIf="loading">Loading loan history...</div>
+
+  <div class="empty-state" *ngIf="!loading && loans.length === 0 && !errorMessage">
+    No loans found.
+  </div>
+
+  <div class="table-wrapper" *ngIf="!loading && loans.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Book</th>
+          <th>Student</th>
+          <th>Issue date</th>
+          <th>Due date</th>
+          <th>Return date</th>
+          <th>Status</th>
+          <th>Overdue days</th>
+          <th>Fine recorded</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let loan of loans">
+          <td>
+            <strong>{{ loan.bookTitle }}</strong>
+            <small>Loan #{{ loan.id }}</small>
+          </td>
+          <td>
+            <strong>{{ loan.studentName }}</strong>
+            <small>{{ loan.studentEmail }}</small>
+            <small>{{ loan.studentMobile || 'No mobile number' }}</small>
+          </td>
+          <td>{{ loan.issueDate | date:'mediumDate' }}</td>
+          <td>{{ loan.dueDate | date:'mediumDate' }}</td>
+          <td>{{ loan.returnDate ? (loan.returnDate | date:'mediumDate') : '—' }}</td>
+          <td>
+            <span class="status" [class.returned]="loan.isReturned">
+              {{ loan.isReturned ? 'Returned' : 'Active' }}
+            </span>
+          </td>
+          <td>{{ loan.overdueDaysAtRequest ?? '—' }}</td>
+          <td>
+            {{ loan.fineAmount == null ? '—' : (loan.fineAmount | currency:'INR':'symbol':'1.0-2') }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

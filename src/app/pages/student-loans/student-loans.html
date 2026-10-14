@@ -1,0 +1,204 @@
+
+<div class="loans-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">STUDENT PORTAL</p>
+      <h1>My Borrowed Books</h1>
+      <p class="subtitle">
+        Track due dates, request book returns, and review your borrowing history.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="goToInventory()">
+        Browse Books
+      </button>
+      <button class="btn btn-outline" (click)="loadLoans()" [disabled]="loading">
+        {{ loading ? 'Refreshing...' : 'Refresh' }}
+      </button>
+      <button class="btn btn-danger" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <section class="stats-grid">
+    <div class="stat-card">
+      <span>Active loans</span>
+      <strong>{{ activeLoans.length }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Pending return requests</span>
+      <strong>{{ pendingReturnCount }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Returned books</span>
+      <strong>{{ returnedLoans.length }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Recorded fines</span>
+      <strong>{{ totalRecordedFines | currency:'INR':'symbol':'1.0-2' }}</strong>
+    </div>
+  </section>
+
+  <div class="alert success" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+  <div class="alert error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    Loading your loan history...
+  </div>
+
+  <ng-container *ngIf="!loading">
+    <section class="loan-section">
+      <div class="section-heading">
+        <div>
+          <h2>Currently Borrowed</h2>
+          <p>Request a return after bringing the physical book to the library.</p>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="activeLoans.length === 0">
+        <h3>No active loans</h3>
+        <p>Books you borrow will appear here.</p>
+        <button class="btn btn-primary" (click)="goToInventory()">
+          Explore Books
+        </button>
+      </div>
+
+      <div class="loan-list" *ngIf="activeLoans.length > 0">
+        <article class="loan-card" *ngFor="let loan of activeLoans">
+          <img
+            class="book-cover"
+            [src]="loan.coverImageUrl || '/images/book-placeholder.svg'"
+            [alt]="loan.bookTitle"
+            (error)="onCoverImageError($event)"
+          />
+
+          <div class="book-details">
+            <span
+              class="badge"
+              [class.badge-danger]="loan.isOverdue"
+              [class.badge-success]="!loan.isOverdue"
+            >
+              {{ loan.isOverdue ? 'Past due date' : 'Active loan' }}
+            </span>
+
+            <h3>{{ loan.bookTitle }}</h3>
+            <p class="muted">by {{ loan.author }}</p>
+
+            <div class="date-grid">
+              <div>
+                <span>Issued</span>
+                <strong>{{ loan.issueDate | date:'mediumDate' }}</strong>
+              </div>
+              <div>
+                <span>Due date</span>
+                <strong>{{ loan.dueDate | date:'mediumDate' }}</strong>
+              </div>
+            </div>
+
+            <div
+              class="fine-panel"
+              [class.fine-warning]="loan.estimatedFineAmount > 0"
+            >
+              <div>
+                <span>Estimated fine</span>
+                <strong>
+                  {{ loan.estimatedFineAmount | currency:'INR':'symbol':'1.0-2' }}
+                </strong>
+              </div>
+              <div>
+                <span>Chargeable days</span>
+                <strong>{{ loan.estimatedOverdueDays }}</strong>
+              </div>
+            </div>
+
+            <p class="muted fine-note">
+              Estimate uses the 7-day grace period and ₹10/day after your due date.
+              The backend records the fine when you request a return.
+            </p>
+
+            <div
+              class="return-status"
+              *ngIf="loan.returnRequestStatus?.toLowerCase() === 'pending'"
+            >
+              <span class="badge badge-warning">Return request pending</span>
+              <p>
+                Submitted {{ loan.returnRequestedAt | date:'medium' }}.
+                Waiting for admin to confirm receipt.
+              </p>
+              <p *ngIf="loan.fineAmount != null">
+                Fine recorded at request:
+                <strong>{{ loan.fineAmount | currency:'INR':'symbol':'1.0-2' }}</strong>
+              </p>
+            </div>
+
+            <div
+              class="return-status"
+              *ngIf="loan.returnRequestStatus?.toLowerCase() === 'completed'"
+            >
+              <span class="badge badge-success">Return completed</span>
+            </div>
+          </div>
+
+          <div class="loan-actions">
+            <button
+              class="btn btn-primary"
+              *ngIf="loan.returnRequestStatus?.toLowerCase() !== 'pending'"
+              [disabled]="requestingIds.has(loan.id)"
+              (click)="requestReturn(loan)"
+            >
+              {{
+                requestingIds.has(loan.id)
+                  ? 'Submitting...'
+                  : loan.returnRequestStatus?.toLowerCase() === 'completed'
+                    ? 'Return completed'
+                    : 'Request Return'
+              }}
+            </button>
+            <button
+              class="btn btn-pending"
+              *ngIf="loan.returnRequestStatus?.toLowerCase() === 'pending'"
+              disabled
+            >
+              Awaiting Admin
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="loan-section">
+      <div class="section-heading">
+        <div>
+          <h2>Return History</h2>
+          <p>Previously returned books and their final recorded fines.</p>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="returnedLoans.length === 0">
+        No returned books yet.
+      </div>
+
+      <div class="history-list" *ngIf="returnedLoans.length > 0">
+        <article class="history-row" *ngFor="let loan of returnedLoans">
+          <div>
+            <strong>{{ loan.bookTitle }}</strong>
+            <p class="muted">by {{ loan.author }}</p>
+          </div>
+          <div>
+            <span>Returned on</span>
+            <strong>{{ loan.returnDate | date:'mediumDate' }}</strong>
+          </div>
+          <div>
+            <span>Fine recorded</span>
+            <strong>{{ (loan.fineAmount ?? 0) | currency:'INR':'symbol':'1.0-2' }}</strong>
+          </div>
+          <span class="badge badge-success">Returned</span>
+        </article>
+      </div>
+    </section>
+  </ng-container>
+</div>

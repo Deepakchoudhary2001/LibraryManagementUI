@@ -1,0 +1,238 @@
+<div class="library-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">LIBRARY MANAGEMENT</p>
+      <h1>Book Inventory</h1>
+      <p class="subtitle">Manage your collection, copies and book details.</p>
+    </div>
+
+    <div class="header-actions">
+      <button class="primary-btn" type="button" (click)="openAddForm()">
+        + Add Book
+      </button>
+
+      <button class="primary-btn" type="button" (click)="openBorrowRequests()">
+        Borrow Requests
+      </button>
+      <button class="primary-btn" type="button" (click)="openReturnRequests()">
+        Book Return Requests
+      </button>
+
+      <button class="primary-btn" type="button" (click)="logout()">
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <span>Total book titles</span>
+      <strong>{{ totalCount }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Current page</span>
+      <strong>{{ currentPage }} / {{ totalPages }}</strong>
+    </div>
+    <div class="stat-card">
+      <span>Books displayed</span>
+      <strong>{{ books.length }}</strong>
+    </div>
+  </div>
+
+  <section class="toolbar">
+    <form class="search-form" (ngSubmit)="searchBooks()">
+      <span class="search-icon">⌕</span>
+      <input type="search" name="searchText" [(ngModel)]="searchText" placeholder="Search title, author or ISBN..."
+        aria-label="Search books" />
+      <button type="submit" class="primary-btn">Search</button>
+      <button type="button" class="secondary-btn" (click)="clearSearch()">
+        Clear
+      </button>
+    </form>
+  </section>
+
+  <!-- Inventory notification -->
+  <div *ngIf="successMessage && !showForm" class="alert success" role="status">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage && !showForm" class="alert error" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading books from the database...</p>
+  </div>
+
+  <div *ngIf="!loading && books.length === 0" class="empty-state">
+    <div class="empty-icon">📚</div>
+    <h2>No books found</h2>
+    <p>Try a different search or add a book to your library.</p>
+    <button class="primary-btn" type="button" (click)="openAddForm()">
+      Add your first book
+    </button>
+  </div>
+
+  <section *ngIf="!loading && books.length > 0" class="book-grid">
+    <article class="book-card" *ngFor="let book of books">
+      <div class="cover-wrap">
+        <img [src]="book.coverImageUrl || '/images/book-placeholder.svg'" [alt]="book.title + ' cover'"
+          (error)="onCoverImageError($event)" />
+        <ng-template #noCover>
+          <div class="cover-placeholder">
+            <span>📖</span>
+            <small>No cover available</small>
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="book-info">
+        <span class="category" *ngIf="book.category">
+          {{ book.category }}
+        </span>
+
+        <h2>{{ book.title }}</h2>
+        <p class="author">by {{ book.author }}</p>
+
+        <p class="description" *ngIf="book.description">
+          {{ book.description }}
+        </p>
+
+        <div class="book-meta">
+          <span *ngIf="book.publishedYear">
+            Published {{ book.publishedYear }}
+          </span>
+          <span *ngIf="book.isbn">ISBN: {{ book.isbn }}</span>
+        </div>
+
+        <div class="availability">
+          <div>
+            <span>Available</span>
+            <strong [class.out-of-stock]="book.availableCopies <= 0">
+              {{ book.availableCopies }} / {{ book.totalCopies }}
+            </strong>
+          </div>
+          <span class="availability-badge" [class.unavailable]="book.availableCopies <= 0">
+            {{ book.availableCopies > 0 ? 'Available' : 'All issued' }}
+          </span>
+        </div>
+
+        <div class="card-actions">
+          <button class="secondary-btn" type="button" (click)="openEditForm(book)">
+            Edit
+          </button>
+          <button class="danger-btn" type="button" (click)="deleteBook(book)">
+            Delete
+          </button>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <footer *ngIf="!loading && totalCount > 0" class="pagination">
+    <p>
+      Showing {{ firstItemNumber }}–{{ lastItemNumber }}
+      of {{ totalCount }} titles
+    </p>
+
+    <div class="page-controls">
+      <button class="secondary-btn" type="button" [disabled]="currentPage <= 1" (click)="goToPage(currentPage - 1)">
+        Previous
+      </button>
+
+      <span class="page-indicator">
+        Page {{ currentPage }} of {{ totalPages }}
+      </span>
+
+      <button class="secondary-btn" type="button" [disabled]="currentPage >= totalPages"
+        (click)="goToPage(currentPage + 1)">
+        Next
+      </button>
+    </div>
+  </footer>
+</div>
+
+<div *ngIf="showForm" class="modal-backdrop" (click)="closeForm()">
+  <section class="book-modal" role="dialog" aria-modal="true" aria-labelledby="form-title"
+    (click)="$event.stopPropagation()">
+    <header class="modal-header">
+      <div>
+        <p class="eyebrow">BOOK DETAILS</p>
+        <h2 id="form-title">
+          {{ editingBookId === null ? 'Add a Book' : 'Edit Book' }}
+        </h2>
+      </div>
+      <button type="button" class="close-btn" aria-label="Close form" (click)="closeForm()">
+        ×
+      </button>
+    </header>
+
+    <div *ngIf="errorMessage" class="alert error" role="alert">
+      {{ errorMessage }}
+    </div>
+
+    <form #bookForm="ngForm" (ngSubmit)="saveBook()">
+      <div class="form-grid">
+        <label class="field full-width">
+          <span>Book title *</span>
+          <input name="title" [(ngModel)]="form.title" required maxlength="200" placeholder="e.g. Clean Code" />
+        </label>
+
+        <label class="field">
+          <span>Author *</span>
+          <input name="author" [(ngModel)]="form.author" required maxlength="150" placeholder="Author name" />
+        </label>
+
+        <label class="field">
+          <span>Category</span>
+          <input name="category" [(ngModel)]="form.category" maxlength="100" placeholder="e.g. Technology" />
+        </label>
+
+        <label class="field">
+          <span>ISBN</span>
+          <input name="isbn" [(ngModel)]="form.isbn" maxlength="20" placeholder="ISBN number" />
+        </label>
+
+        <label class="field">
+          <span>Published year</span>
+          <input name="publishedYear" type="number" [(ngModel)]="form.publishedYear" min="1" max="9999"
+            placeholder="e.g. 2008" />
+        </label>
+
+        <label class="field">
+          <span>Total copies *</span>
+          <input name="totalCopies" type="number" [(ngModel)]="form.totalCopies" required min="1" max="10000" />
+        </label>
+
+        <label class="field full-width">
+          <span>Cover image URL</span>
+          <input name="coverImageUrl" type="url" [(ngModel)]="form.coverImageUrl"
+            placeholder="https://example.com/book-cover.jpg" />
+          <small>Use a publicly accessible image URL.</small>
+        </label>
+
+        <label class="field full-width">
+          <span>Description</span>
+          <textarea name="description" [(ngModel)]="form.description" rows="3"
+            placeholder="A short description of the book..."></textarea>
+        </label>
+      </div>
+
+      <footer class="form-actions">
+        <button type="button" class="secondary-btn" [disabled]="saving" (click)="closeForm()">
+          Cancel
+        </button>
+        <button type="submit" class="primary-btn" [disabled]="saving || bookForm.invalid">
+          {{
+          saving
+          ? 'Saving...'
+          : editingBookId === null
+          ? 'Add Book'
+          : 'Save Changes'
+          }}
+        </button>
+      </footer>
+    </form>
+  </section>
+</div>

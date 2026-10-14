@@ -1,0 +1,105 @@
+
+<div class="requests-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">LIBRARY ADMINISTRATION</p>
+      <h1>Student Borrow Requests</h1>
+      <p class="subtitle">
+        Review requests, check student details, and approve or reject borrowing.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="goToInventory()">
+        Book Inventory
+      </button>
+      <button class="btn btn-outline" (click)="loadRequests()" [disabled]="loading">
+        {{ loading ? 'Refreshing...' : 'Refresh' }}
+      </button>
+      <button class="btn btn-danger" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <section class="summary">
+    <div class="summary-card">
+      <span>Pending requests</span>
+      <strong>{{ requests.length }}</strong>
+    </div>
+    <div class="summary-card">
+      <span>Action required</span>
+      <strong>{{ requests.length > 0 ? 'Yes' : 'No' }}</strong>
+    </div>
+  </section>
+
+  <div class="alert success" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="alert error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    Loading student requests...
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && requests.length === 0 && !errorMessage">
+    <div class="empty-icon">✓</div>
+    <h2>No pending requests</h2>
+    <p>New student borrow requests will appear here.</p>
+    <button class="btn btn-primary" (click)="loadRequests()">Check again</button>
+  </div>
+
+  <section class="request-list" *ngIf="!loading && requests.length > 0">
+    <article class="request-card" *ngFor="let request of requests">
+      <div class="book-section">
+        <img
+          class="book-cover"
+          [src]="request.book.coverImageUrl || '/images/book-placeholder.svg'"
+          [alt]="request.book.title"
+          (error)="onCoverImageError($event)"
+        />
+
+        <div class="book-info">
+          <span class="status-badge">Pending</span>
+          <h2>{{ request.book.title }}</h2>
+          <p class="author">by {{ request.book.author }}</p>
+          <p class="meta">Book ID: {{ request.book.id }}</p>
+          <p class="meta">
+            Inventory: {{ request.book.availableCopies }} available /
+            {{ request.book.totalCopies }} total
+          </p>
+          <p class="meta">
+            Requested: {{ request.requestedAt | date:'medium' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="student-section">
+        <h3>Student details</h3>
+        <p><span>Name</span><strong>{{ request.student.fullName }}</strong></p>
+        <p><span>Email</span><strong>{{ request.student.email }}</strong></p>
+        <p><span>Mobile</span><strong>{{ request.student.mobileNumber || 'Not provided' }}</strong></p>
+        <p><span>Student ID</span><strong>{{ request.student.id }}</strong></p>
+      </div>
+
+      <div class="request-actions">
+        <button
+          class="btn btn-approve"
+          (click)="approve(request)"
+          [disabled]="processingIds.has(request.id)"
+        >
+          {{ processingIds.has(request.id) ? 'Processing...' : 'Approve Request' }}
+        </button>
+
+        <button
+          class="btn btn-reject"
+          (click)="reject(request)"
+          [disabled]="processingIds.has(request.id)"
+        >
+          Reject Request
+        </button>
+      </div>
+    </article>
+  </section>
+</div>

@@ -1,0 +1,356 @@
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f4f6fb;
+  color: #182230;
+}
+
+.loans-page {
+  max-width: 1440px;
+  margin: auto;
+  padding: 32px;
+}
+
+.page-header,
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.page-header {
+  margin-bottom: 26px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #5b5bd6;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(26px, 3vw, 36px);
+}
+
+.subtitle,
+.section-heading p {
+  color: #667085;
+  margin: 8px 0 0;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #e7eaf0;
+  border-radius: 15px;
+  display: grid;
+  gap: 10px;
+}
+
+.stat-card span,
+.history-row span,
+.date-grid span,
+.fine-panel span {
+  color: #667085;
+  font-size: 13px;
+}
+
+.stat-card strong {
+  font-size: 27px;
+}
+
+.loan-section {
+  margin-top: 28px;
+}
+
+.section-heading {
+  margin-bottom: 16px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.loan-list,
+.history-list {
+  display: grid;
+  gap: 16px;
+}
+
+.loan-card {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr) 155px;
+  align-items: start;
+  gap: 22px;
+  padding: 22px;
+  background: #fff;
+  border: 1px solid #e7eaf0;
+  border-radius: 17px;
+  box-shadow: 0 5px 18px #10182808;
+}
+
+.book-cover {
+  width: 110px;
+  height: 152px;
+  object-fit: cover;
+  border-radius: 9px;
+  background: #eef0f5;
+}
+
+.book-details {
+  min-width: 0;
+}
+
+.book-details h3 {
+  margin: 10px 0 5px;
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: #667085;
+  font-size: 13px;
+}
+
+.date-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.date-grid div,
+.fine-panel div {
+  display: grid;
+  gap: 6px;
+}
+
+.fine-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  background: #f8fafc;
+  border: 1px solid #eaecf0;
+  border-radius: 11px;
+  padding: 14px;
+}
+
+.fine-panel strong {
+  font-size: 18px;
+}
+
+.fine-warning {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+
+.fine-note {
+  line-height: 1.5;
+}
+
+.return-status {
+  padding: 12px 0;
+}
+
+.return-status p {
+  font-size: 13px;
+  color: #667085;
+  margin-bottom: 0;
+}
+
+.loan-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn {
+  border: 1px solid transparent;
+  border-radius: 9px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.btn-outline {
+  background: #fff;
+  color: #344054;
+  border-color: #d0d5dd;
+}
+
+.btn-danger {
+  background: #fff;
+  color: #b42318;
+  border-color: #fecdca;
+}
+
+.btn-pending {
+  background: #fff3d6;
+  color: #925d00;
+  border-color: #f4d48c;
+}
+
+.btn:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+.badge {
+  display: inline-block;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.badge-danger {
+  color: #b42318;
+  background: #fef3f2;
+}
+
+.badge-success {
+  color: #067647;
+  background: #ecfdf3;
+}
+
+.badge-warning {
+  color: #925d00;
+  background: #fff3d6;
+}
+
+.history-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(120px, 1fr) minmax(120px, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid #e7eaf0;
+  border-radius: 13px;
+}
+
+.history-row > div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.history-row p {
+  margin: 0;
+}
+
+.alert {
+  margin: 14px 0;
+  padding: 13px 16px;
+  border-radius: 10px;
+}
+
+.success {
+  color: #067647;
+  background: #ecfdf3;
+  border: 1px solid #abefc6;
+}
+
+.error {
+  color: #b42318;
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+}
+
+.loading-state,
+.empty-state {
+  padding: 38px 20px;
+  text-align: center;
+  color: #667085;
+  background: #fff;
+  border: 1px solid #e7eaf0;
+  border-radius: 15px;
+}
+
+.empty-state h3 {
+  color: #182230;
+}
+
+@media (max-width: 950px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .loan-card {
+    grid-template-columns: 90px minmax(0, 1fr);
+  }
+
+  .book-cover {
+    width: 90px;
+    height: 125px;
+  }
+
+  .loan-actions {
+    grid-column: 2;
+  }
+
+  .history-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .loans-page {
+    padding: 17px;
+  }
+
+  .loan-card {
+    grid-template-columns: 1fr;
+  }
+
+  .book-cover {
+    width: 100px;
+    height: 138px;
+  }
+
+  .loan-actions {
+    grid-column: auto;
+  }
+
+  .date-grid,
+  .history-row {
+    grid-template-columns: 1fr;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+}

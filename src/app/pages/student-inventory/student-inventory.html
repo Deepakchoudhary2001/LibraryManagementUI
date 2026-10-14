@@ -1,0 +1,204 @@
+<div class="library-page">
+    <header class="page-header">
+        <div>
+            <p class="eyebrow">STUDENT PORTAL</p>
+            <h1>Explore the Library</h1>
+            <p class="subtitle">
+                Discover books, check availability, and request books to borrow.
+            </p>
+        </div>
+        <button type="button" class="logout-button" (click)="goToMyLoans()">
+            My Borrowed Books
+        </button>
+        <button type="button" class="logout-button" (click)="logout()">
+            Logout
+        </button>
+    </header>
+
+    <section class="stats-row">
+        <div class="stat-card">
+            <span>Total book titles</span>
+            <strong>{{ totalCount }}</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Current page</span>
+            <strong>{{ currentPage }} / {{ totalPages }}</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>My pending requests</span>
+            <strong>{{ pendingBookIds.size }}</strong>
+        </div>
+    </section>
+
+    <section class="toolbar">
+        <form class="search-form" (ngSubmit)="searchBooks()">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+
+            <input type="search" name="searchText" [(ngModel)]="searchText"
+                placeholder="Search title, author or ISBN..." aria-label="Search books" />
+
+            <button type="submit" class="primary-btn">Search</button>
+
+            <button type="button" class="secondary-btn" (click)="clearSearch()">
+                Clear
+            </button>
+        </form>
+    </section>
+
+    <div *ngIf="successMessage" class="alert success" role="status">
+        {{ successMessage }}
+    </div>
+
+    <div *ngIf="errorMessage" class="alert error" role="alert">
+        {{ errorMessage }}
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading books from the library...</p>
+    </div>
+
+    <div *ngIf="!loading && books.length === 0" class="empty-state">
+        <div class="empty-icon">📚</div>
+        <h2>No books found</h2>
+        <p>Try searching with another title, author, or ISBN.</p>
+        <button type="button" class="secondary-btn" (click)="clearSearch()">
+            Show all books
+        </button>
+    </div>
+
+    <section *ngIf="!loading && books.length > 0" class="book-grid">
+        <article class="book-card" *ngFor="let book of books">
+            <div class="cover-wrap">
+                <img [src]="book.coverImageUrl || '/images/book-placeholder.svg'" [alt]="book.title + ' cover'"
+                    loading="lazy" (error)="onCoverImageError($event)" />
+            </div>
+
+            <div class="book-info">
+                <span class="category" *ngIf="book.category">
+                    {{ book.category }}
+                </span>
+
+                <h2>{{ book.title }}</h2>
+                <p class="author">by {{ book.author }}</p>
+
+                <p class="description" *ngIf="book.description">
+                    {{ book.description }}
+                </p>
+
+                <div class="book-meta">
+                    <span *ngIf="book.publishedYear">
+                        Published {{ book.publishedYear }}
+                    </span>
+                    <span *ngIf="book.isbn">ISBN: {{ book.isbn }}</span>
+                </div>
+
+                <div class="availability">
+                    <div>
+                        <span>Available copies</span>
+                        <strong [class.out-of-stock]="book.availableCopies <= 0">
+                            {{ book.availableCopies }} / {{ book.totalCopies }}
+                        </strong>
+                    </div>
+
+                    <span class="availability-badge" [class.unavailable]="book.availableCopies <= 0">
+                        {{ book.availableCopies > 0 ? 'Available' : 'All issued' }}
+                    </span>
+                </div>
+
+                <div class="request-area">
+                    <button *ngIf="!pendingBookIds.has(book.id)" type="button" class="primary-btn request-btn"
+                        [disabled]="
+              book.availableCopies <= 0 ||
+              requestingBookIds.has(book.id)
+            " (click)="requestToBorrow(book)">
+                        {{
+                        requestingBookIds.has(book.id)
+                        ? 'Submitting...'
+                        : book.availableCopies <= 0 ? 'Currently unavailable' : 'Request to Borrow' }} </button>
+
+                            <button *ngIf="pendingBookIds.has(book.id)" type="button" class="pending-btn request-btn"
+                                disabled>
+                                Request Pending
+                            </button>
+
+                            <p class="request-note" *ngIf="pendingBookIds.has(book.id)">
+                                Your request is waiting for admin approval.
+                            </p>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <footer *ngIf="!loading && totalCount > 0" class="pagination">
+        <p>
+            Showing {{ firstItemNumber }}–{{ lastItemNumber }}
+            of {{ totalCount }} titles
+        </p>
+
+        <div class="page-controls">
+            <button type="button" class="secondary-btn" [disabled]="currentPage <= 1"
+                (click)="goToPage(currentPage - 1)">
+                Previous
+            </button>
+
+            <span class="page-indicator">
+                Page {{ currentPage }} of {{ totalPages }}
+            </span>
+
+            <button type="button" class="secondary-btn" [disabled]="currentPage >= totalPages"
+                (click)="goToPage(currentPage + 1)">
+                Next
+            </button>
+        </div>
+    </footer>
+
+    <section class="requests-summary">
+        <div class="requests-heading">
+            <div>
+                <p class="eyebrow">YOUR ACTIVITY</p>
+                <h2>Recent Borrow Requests</h2>
+            </div>
+
+            <button type="button" class="secondary-btn" (click)="loadMyRequests()" [disabled]="requestsLoading">
+                {{ requestsLoading ? 'Refreshing...' : 'Refresh' }}
+            </button>
+        </div>
+
+        <p *ngIf="requestsLoading" class="muted">
+            Loading your requests...
+        </p>
+
+        <p *ngIf="!requestsLoading && myRequests.length === 0" class="muted">
+            You haven't requested any books yet.
+        </p>
+
+        <div class="request-row" *ngFor="let request of myRequests.slice(0, 5)">
+            <div class="request-book">
+                <img *ngIf="request.coverImageUrl" [src]="request.coverImageUrl"
+                    [alt]="(request.bookTitle || request.title || 'Book') + ' cover'"
+                    (error)="onCoverImageError($event)" />
+
+                <div>
+                    <strong>
+                        {{ request.bookTitle || request.title || ('Book #' + request.bookId) }}
+                    </strong>
+                    <small>
+                        Requested {{ request.requestedAt | date:'mediumDate' }}
+                    </small>
+                    <small *ngIf="request.status === 'Rejected' && request.rejectionReason">
+                        Reason: {{ request.rejectionReason }}
+                    </small>
+                </div>
+            </div>
+
+            <span class="status-badge" [class.status-pending]="request.status === 'Pending'"
+                [class.status-approved]="request.status === 'Approved'"
+                [class.status-rejected]="request.status === 'Rejected'">
+                {{ request.status }}
+            </span>
+        </div>
+    </section>
+</div>

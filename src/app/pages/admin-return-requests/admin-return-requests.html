@@ -1,0 +1,115 @@
+
+<div class="return-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">LIBRARY ADMINISTRATION</p>
+      <h1>Book Return Requests</h1>
+      <p class="subtitle">
+        Review student details, overdue days and fines before accepting returned books.
+      </p>
+    </div>
+
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="goToInventory()">
+        Book Inventory
+      </button>
+      <button class="btn btn-outline" (click)="goToLoans()">
+        Loan History
+      </button>
+      <button class="btn btn-outline" (click)="loadRequests()" [disabled]="loading">
+        {{ loading ? 'Refreshing...' : 'Refresh' }}
+      </button>
+      <button class="btn btn-danger" (click)="logout()">Logout</button>
+    </div>
+  </header>
+
+  <section class="summary-card">
+    <div>
+      <span>Awaiting physical receipt</span>
+      <strong>{{ requests.length }}</strong>
+    </div>
+    <div>
+      <span>Total recorded fines in pending requests</span>
+      <strong>{{ totalPendingFines | currency:'INR':'symbol':'1.0-2' }}</strong>
+    </div>
+  </section>
+
+  <div class="alert success" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+  <div class="alert error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    Loading return requests...
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && requests.length === 0 && !errorMessage">
+    <div class="empty-icon">✓</div>
+    <h2>No pending return requests</h2>
+    <p>When students request a return, the request will appear here.</p>
+    <button class="btn btn-primary" (click)="loadRequests()">Check again</button>
+  </div>
+
+  <section class="request-list" *ngIf="!loading && requests.length > 0">
+    <article class="request-card" *ngFor="let request of requests">
+      <div class="book-section">
+        <img
+          class="book-cover"
+          [src]="request.coverImageUrl || '/images/book-placeholder.svg'"
+          [alt]="request.bookTitle"
+          (error)="onCoverImageError($event)"
+        />
+
+        <div class="book-info">
+          <span class="badge badge-warning">Return pending</span>
+          <h2>{{ request.bookTitle }}</h2>
+          <p class="muted">by {{ request.bookAuthor }}</p>
+          <p class="meta">Loan ID: {{ request.id }} · Book ID: {{ request.bookId }}</p>
+          <p class="meta">Issued: {{ request.issueDate | date:'mediumDate' }}</p>
+          <p class="meta">Due: {{ request.dueDate | date:'mediumDate' }}</p>
+          <p class="meta">
+            Return requested: {{ request.returnRequestedAt | date:'medium' }}
+          </p>
+        </div>
+      </div>
+
+      <div class="student-section">
+        <h3>Student details</h3>
+        <p><span>Name</span><strong>{{ request.studentName }}</strong></p>
+        <p><span>Email</span><strong>{{ request.studentEmail }}</strong></p>
+        <p><span>Mobile</span><strong>{{ request.studentMobile || 'Not provided' }}</strong></p>
+        <p><span>Borrower ID</span><strong>{{ request.borrowerId }}</strong></p>
+      </div>
+
+      <div class="fine-section">
+        <h3>Overdue calculation</h3>
+        <div class="fine-number">
+          <span>Fine recorded</span>
+          <strong>{{ request.fineAmount | currency:'INR':'symbol':'1.0-2' }}</strong>
+        </div>
+        <div class="fine-number">
+          <span>Chargeable overdue days</span>
+          <strong>{{ request.overdueDaysAtRequest }}</strong>
+        </div>
+        <p class="fine-note">
+          Based on the due date, 7-day grace period and ₹10 per chargeable day.
+          This amount was recorded when the student submitted the return request.
+        </p>
+
+        <button
+          class="btn btn-confirm"
+          (click)="confirmReturn(request)"
+          [disabled]="processingIds.has(request.id)"
+        >
+          {{
+            processingIds.has(request.id)
+              ? 'Confirming...'
+              : 'Accept Returned Book'
+          }}
+        </button>
+      </div>
+    </article>
+  </section>
+</div>

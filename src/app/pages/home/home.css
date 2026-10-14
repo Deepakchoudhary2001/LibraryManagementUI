@@ -1,0 +1,266 @@
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.landing-page {
+  min-height: 100vh;
+  padding: 0 7%;
+  color: #172033;
+  background:
+    radial-gradient(circle at 80% 35%, #e3eaff 0, transparent 32%),
+    linear-gradient(135deg, #f8faff, #eef2ff);
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #dfe5f0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: #182443;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: white;
+  background: #4058cf;
+  border-radius: 12px;
+}
+
+.brand-light {
+  color: #4058cf;
+}
+
+.nav-label {
+  color: #68738b;
+  font-size: 13px;
+}
+
+.hero {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 48px;
+  padding: 65px 0;
+}
+
+.eyebrow {
+  color: #4058cf;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+h1 {
+  margin: 22px 0;
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.12;
+  letter-spacing: -2px;
+}
+
+h1 span {
+  color: #4058cf;
+}
+
+.hero-content > p {
+  max-width: 510px;
+  color: #68738b;
+  font-size: 17px;
+  line-height: 1.8;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  margin-top: 32px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-width: 245px;
+  padding: 15px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary {
+  color: white;
+  background: #4058cf;
+  box-shadow: 0 8px 20px #4058cf35;
+}
+
+.btn-secondary {
+  color: #26365b;
+  background: white;
+  border: 1px solid #dfe5f0;
+}
+
+.staff-link {
+  margin-top: 8px;
+  color: #4058cf;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hero-visual {
+  min-height: 390px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #ffffffb5;
+  border-radius: 28px;
+  background: linear-gradient(145deg, #e3eaff, #f6f7ff);
+}
+
+.visual-glow {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: #c6d0ff;
+  filter: blur(35px);
+}
+
+.book {
+  position: relative;
+  z-index: 1;
+  width: 112px;
+  height: 220px;
+  margin: 0 -3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px 10px 10px 5px;
+  box-shadow: 8px 16px 24px #26365b25;
+  transform: rotate(-7deg);
+}
+
+.book-one {
+  background: #4058cf;
+  color: white;
+  margin-top: 45px;
+}
+
+.book-two {
+  height: 260px;
+  background: #f1c777;
+  color: #573d19;
+  transform: rotate(2deg);
+}
+
+.book-three {
+  background: #294c45;
+  color: white;
+  margin-top: 35px;
+  transform: rotate(9deg);
+}
+
+.book-spine {
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #ffffff55;
+}
+
+.book-title {
+  padding: 10px;
+  font-size: 12px;
+  line-height: 1.7;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.visual-caption {
+  position: absolute;
+  bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #52617e;
+  font-size: 13px;
+}
+
+.caption-dot {
+  width: 8px;
+  height: 8px;
+  background: #4058cf;
+  border-radius: 50%;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 0;
+  border-top: 1px solid #dfe5f0;
+  color: #778198;
+  font-size: 12px;
+}
+
+@media (max-width: 800px) {
+  .landing-page {
+    padding: 0 5%;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 35px;
+    padding: 48px 0;
+  }
+
+  .hero-visual {
+    min-height: 300px;
+  }
+
+  .book {
+    width: 85px;
+    height: 175px;
+  }
+
+  .book-two {
+    height: 210px;
+  }
+
+  .nav-label {
+    display: none;
+  }
+
+  .footer {
+    flex-direction: column;
+  }
+}
